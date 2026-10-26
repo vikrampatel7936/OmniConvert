@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OmniConvert — Universal Offline File Converter</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Core Client-Side Conversion Libraries (CDN for GitHub Pages) -->
+  <!-- 1. PDF.js for Reading & Rendering PDFs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- 2. SheetJS for Excel & CSV -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <!-- 3. PapaParse for CSV -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- 4. Mammoth for Word (.docx) reading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <!-- 5. JSZip for creating Word DOCX and Batch ZIPs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- 6. jsPDF for PDF creation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- 7. Marked for Markdown to HTML -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+  <!-- 8. Turndown for HTML to Markdown -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.1.2/turndown.min.js"></script>
+  <!-- 9. js-yaml for YAML conversions -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</head>
+<body class="theme-dark">
+  <div class="app-container">
+    <!-- Navigation / Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 40 40" width="36" height="36" fill="none">
+            <rect width="40" height="40" rx="10" fill="url(#brand-grad)" />
+            <path d="M12 18 L20 10 L28 18 M20 10 L20 30" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M28 22 L20 30 L12 22" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+            <defs>
+              <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">OmniConvert</div>
+          <div class="brand-subtitle">Universal Client-Side File Converter</div>
+        </div>
+      </div>
+
+      <div class="header-badges">
+        <span class="badge badge-pulse">🌐 GitHub Pages Ready</span>
+        <span class="badge">🔒 100% In-Browser</span>
+        <span class="badge">📱 Mobile Friendly</span>
+      </div>
+
+      <div class="header-actions">
+        <button id="themeToggleBtn" class="btn-icon" title="Toggle Theme" aria-label="Toggle theme">
+          <span class="icon-sun">☀️</span>
+          <span class="icon-moon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="smart">
+        <span class="tab-icon">🔄</span> Smart Converter
+      </button>
+      <button class="tab-btn" data-tab="documents">
+        <span class="tab-icon">📄</span> Documents
+      </button>
+      <button class="tab-btn" data-tab="data">
+        <span class="tab-icon">📊</span> Sheets &amp; Data
+      </button>
+      <button class="tab-btn" data-tab="images">
+        <span class="tab-icon">🖼️</span> Images
+      </button>
+      <button class="tab-btn" data-tab="audio">
+        <span class="tab-icon">🎵</span> Audio
+      </button>
+      <button class="tab-btn" data-tab="tools">
+        <span class="tab-icon">🛠️</span> Dev Tools
+      </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+
+      <!-- ================= SMART CONVERTER TAB ================= -->
+      <section id="tab-smart" class="tab-pane active">
+        <div class="hero-text">
+          <h1>Convert Any File to Any Format</h1>
+          <p>Drag and drop PDF, Word, Excel, CSV, JSON, PNG, JPG, or any data file. Processed 100% inside your browser on mobile or desktop — no server upload required!</p>
+        </div>
+
+        <!-- Universal Drop Zone -->
+        <div class="drop-zone" id="universalDropZone">
+          <input type="file" id="universalFileInput" multiple class="file-input-hidden">
+          <div class="drop-zone-content">
+            <div class="drop-icon-wrapper">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <h3>Drag &amp; drop your files here</h3>
+            <p>or <button type="button" class="btn-link" id="browseFilesBtn">Browse from device</button></p>
+            <div class="supported-tags">
+              <span>PDF ⇄ Word</span>
+              <span>Excel ⇄ CSV</span>
+              <span>JSON ⇄ XML</span>
+              <span>Images ⇄ WebP/PDF</span>
+              <span>Markdown ⇄ HTML</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conversion Queue / Selected Files -->
+        <div id="queueSection" class="queue-section hidden">
+          <div class="queue-header">
+            <h3>Files to Convert (<span id="queueCount">0</span>)</h3>
+            <div class="queue-actions">
+              <button class="btn btn-outline btn-sm" id="clearQueueBtn">Clear All</button>
+              <button class="btn btn-primary btn-sm" id="convertAllBtn">Convert All Files</button>
+            </div>
+          </div>
+
+          <div id="queueList" class="queue-list"></div>
+
+          <!-- Optional Image Settings Drawer -->
+          <div id="imageOptionsCard" class="options-card hidden">
+            <h4>⚙️ Image Settings</h4>
+            <div class="options-grid">
+              <div class="opt-group">
+                <label>Quality: <span id="qualityVal">85%</span></label>
+                <input type="range" id="optQuality" min="10" max="100" value="85">
+              </div>
+              <div class="opt-group">
+                <label>Max Width (px):</label>
+                <input type="number" id="optWidth" placeholder="e.g. 1920" min="50" max="8000">
+              </div>
+              <div class="opt-group">
+                <label>Grayscale Filter:</label>
+                <input type="checkbox" id="optGrayscale">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Converted Results Section -->
+        <div id="resultsSection" class="results-section hidden">
+          <div class="results-header">
+            <h3>🎉 Converted Files</h3>
+            <button class="btn btn-success" id="downloadAllZipBtn">📦 Download All as ZIP</button>
+          </div>
+          <div id="resultsList" class="results-list"></div>
+        </div>
+      </section>
+
+      <!-- ================= DOCUMENTS TAB ================= -->
+      <section id="tab-documents" class="tab-pane">
+        <div class="tab-header">
+          <h2>Document Converters</h2>
+          <p>Convert documents right on your device with clean typography and formatting.</p>
+        </div>
+
+        <div class="quick-cards-grid">
+          <div class="quick-card" data-preset="pdf-to-docx">
+            <div class="card-icon">📄 ➔ 📝</div>
+            <h3>PDF to Word (DOCX)</h3>
+            <p>Convert PDF documents into editable Microsoft Word (.docx) files.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="docx-to-pdf">
+            <div class="card-icon">📝 ➔ 📄</div>
+            <h3>Word (DOCX) to PDF</h3>
+            <p>Turn Microsoft Word documents into portable, high-quality PDFs.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="pdf-to-txt">
+            <div class="card-icon">📄 ➔ 📋</div>
+            <h3>PDF to Text / HTML / Images</h3>
+            <p>Extract all text, HTML layout, or high-res page images from any PDF.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="md-to-all">
+            <div class="card-icon">📑 ➔ 🌐</div>
+            <h3>Markdown to HTML / Word / PDF</h3>
+            <p>Convert Markdown notes to clean HTML, Word document, or PDF.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SPREADSHEETS & DATA TAB ================= -->
+      <section id="tab-data" class="tab-pane">
+        <div class="tab-header">
+          <h2>Spreadsheets &amp; Data Converters</h2>
+          <p>Seamlessly switch between tabular and structured data formats.</p>
+        </div>
+
+        <div class="quick-cards-grid">
+          <div class="quick-card" data-preset="xlsx-to-csv">
+            <div class="card-icon">📊 ➔ 📄</div>
+            <h3>Excel to CSV / JSON</h3>
+            <p>Extract Excel sheets (.xlsx, .xls) directly into CSV, JSON, or HTML tables.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="csv-to-xlsx">
+            <div class="card-icon">📄 ➔ 📊</div>
+            <h3>CSV to Excel (.xlsx)</h3>
+            <p>Convert CSV or TSV data into formatted Microsoft Excel workbooks.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="json-to-csv">
+            <div class="card-icon">📦 ➔ 📊</div>
+            <h3>JSON to CSV / Excel</h3>
+            <p>Flatten structured JSON API data into spreadsheet or tabular format.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="xml-yaml">
+            <div class="card-icon">⚙️ ➔ 🔄</div>
+            <h3>XML ⇄ JSON ⇄ YAML</h3>
+            <p>Convert configuration and data files across XML, JSON, and YAML formats.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= IMAGES TAB ================= -->
+      <section id="tab-images" class="tab-pane">
+        <div class="tab-header">
+          <h2>Image Converters &amp; Optimizer</h2>
+          <p>Convert modern image formats, compress, and compile images to PDF.</p>
+        </div>
+
+        <div class="quick-cards-grid">
+          <div class="quick-card" data-preset="images-to-pdf">
+            <div class="card-icon">🖼️ ➔ 📄</div>
+            <h3>Images to PDF</h3>
+            <p>Combine one or multiple photos (PNG, JPG, WebP) into a clean PDF document.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="to-webp">
+            <div class="card-icon">🖼️ ➔ ⚡</div>
+            <h3>Convert to WebP</h3>
+            <p>Next-gen web compression to shrink photo file size without quality loss.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="to-png">
+            <div class="card-icon">🖼️ ➔ 🎨</div>
+            <h3>Convert to PNG / JPG</h3>
+            <p>Universal compatibility image conversions for web, social, and print.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+
+          <div class="quick-card" data-preset="to-ico">
+            <div class="card-icon">🖼️ ➔ 🔖</div>
+            <h3>Convert to Favicon (.ico)</h3>
+            <p>Create website favicons and application icons from any logo or picture.</p>
+            <button class="btn btn-outline btn-sm">Use Converter</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= AUDIO TAB ================= -->
+      <section id="tab-audio" class="tab-pane">
+        <div class="tab-header">
+          <h2>Audio Converter</h2>
+          <p>Convert audio files locally in your browser using the Web Audio API engine.</p>
+        </div>
+
+        <div class="audio-converter-box">
+          <div class="drop-zone" id="audioDropZone">
+            <input type="file" id="audioFileInput" accept="audio/*,.mp3,.wav,.ogg,.aac,.m4a" class="file-input-hidden">
+            <div class="drop-zone-content">
+              <div class="drop-icon-wrapper">🎵</div>
+              <h3>Select or drop audio file</h3>
+              <p>Supports MP3, WAV, OGG, AAC, and M4A</p>
+              <button type="button" class="btn btn-primary btn-sm" id="browseAudioBtn">Select Audio File</button>
+            </div>
+          </div>
+
+          <div id="audioPlayerSection" class="audio-player-card hidden">
+            <div class="audio-info">
+              <div class="audio-title" id="audioFileName">track.mp3</div>
+              <div class="audio-meta" id="audioFileMeta">Duration: -- | Size: --</div>
+            </div>
+            <audio id="audioPreview" controls class="audio-preview-element"></audio>
+
+            <div class="audio-convert-controls">
+              <label>Target Format:</label>
+              <select id="audioTargetFormat" class="select-input">
+                <option value="wav">WAV (Lossless 16-bit PCM)</option>
+              </select>
+              <button id="convertAudioBtn" class="btn btn-primary">Transcode Audio</button>
+            </div>
+
+            <div id="audioResult" class="hidden">
+              <a id="downloadAudioBtn" class="btn btn-success" download>⬇️ Download Transcoded Audio</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DEV TOOLS TAB ================= -->
+      <section id="tab-tools" class="tab-pane">
+        <div class="tab-header">
+          <h2>Developer Utilities</h2>
+          <p>Instant Base64 encoding/decoding, QR code generation, and hash utilities.</p>
+        </div>
+
+        <div class="tools-grid">
+          <!-- Tool 1: Base64 File Encoder/Decoder -->
+          <div class="tool-card">
+            <h3>📦 Base64 File Converter</h3>
+            <p>Convert any file to Base64 Data URL, or decode Base64 back into a file.</p>
+            <div class="tool-inputs">
+              <input type="file" id="base64FileInput" class="file-input">
+              <textarea id="base64Output" placeholder="Base64 Data URL or string will appear here..." rows="5"></textarea>
+              <div class="tool-btn-group">
+                <button id="copyBase64Btn" class="btn btn-outline btn-sm">Copy to Clipboard</button>
+                <button id="downloadBase64FileBtn" class="btn btn-primary btn-sm">Decode &amp; Download File</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tool 2: QR Code Generator -->
+          <div class="tool-card">
+            <h3>📱 QR Code Generator</h3>
+            <p>Generate a high-resolution QR code image from any text or website URL.</p>
+            <div class="tool-inputs">
+              <input type="text" id="qrTextInput" class="text-input" placeholder="Enter URL or text (e.g. https://example.com)">
+              <button id="generateQrBtn" class="btn btn-primary btn-sm">Generate QR Code</button>
+              <div id="qrCanvasWrapper" class="qr-preview-wrapper hidden">
+                <canvas id="qrCanvas"></canvas>
+                <a id="downloadQrBtn" class="btn btn-success btn-sm" download="qrcode.png">Download PNG</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>OmniConvert — 100% In-Browser &amp; GitHub Pages Compatible.</div>
+      <div class="footer-privacy">🔒 100% Private: All processing happens in your device's memory. No files are ever sent to a server.</div>
+    </footer>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
